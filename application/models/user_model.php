@@ -4,7 +4,7 @@ class User_model extends CI_Model {
     function validate_login($username, $password)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,"http://www.reddit.com/api/login/tompatterson");
+        curl_setopt($ch, CURLOPT_URL,"http://www.reddit.com/api/login/$username");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
                     "user=$username&passwd=$password&api_type=json");
