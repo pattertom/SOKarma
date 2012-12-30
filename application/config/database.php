@@ -45,13 +45,13 @@
 | the active record class
 */
 
-$active_group = 'local';
+$active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = '';
-$db['default']['password'] = '';
-$db['default']['database'] = '';
+$db['default']['hostname'] = 'sokarma.ckfhmogmkzsa.us-east-1.rds.amazonaws.com';
+$db['default']['username'] = 'dbuser';
+$db['default']['password'] = 's0o4k2a7r9m0a';
+$db['default']['database'] = 'sokarmadb';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -63,23 +63,6 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
-
-$db['local']['hostname'] = 'localhost:8889';
-$db['local']['username'] = 'root';
-$db['local']['password'] = 'root';
-$db['local']['database'] = 'so_data';
-$db['local']['dbdriver'] = 'mysql';
-$db['local']['dbprefix'] = '';
-$db['local']['pconnect'] = TRUE;
-$db['local']['db_debug'] = TRUE;
-$db['local']['cache_on'] = FALSE;
-$db['local']['cachedir'] = '';
-$db['local']['char_set'] = 'utf8';
-$db['local']['dbcollat'] = 'utf8_general_ci';
-$db['local']['swap_pre'] = '';
-$db['local']['autoinit'] = TRUE;
-$db['local']['stricton'] = FALSE;
-
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

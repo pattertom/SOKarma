@@ -19,7 +19,7 @@ class User extends CI_Controller {
         $password = $this->input->post('password');
         
         if ($username && $password)
-            $this->user_model->validate_login($username, $password);
+            $this->user_model->record_actions($username, $password);
         else {
             $this->session->set_flashdata('message', '<div class="fail">You must supply a username and password.</div>');
             redirect('user/login');
