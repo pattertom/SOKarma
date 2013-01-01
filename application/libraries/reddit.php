@@ -14,6 +14,7 @@ class reddit{
     private $modHash = null;
     private $session = null;
     private $username = null;
+    public $loginSuccess = false;
     
     /**
     * Class Constructor
@@ -35,6 +36,7 @@ class reddit{
         if (count($response->json->errors) > 0){
             return "login error";    
         } else {
+            $this->loginSuccess = true;
             $this->modHash = $response->json->data->modhash;   
             $this->session = $response->json->data->cookie;
             return $this->modHash;

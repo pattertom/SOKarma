@@ -10,11 +10,26 @@ class User_model extends CI_Model {
     function record_actions($username, $password)
     {
         $reddit = new reddit($username, $password);
-        
-        $response = $reddit->getLiked();
-        $this->insert_reddit_posts_data($response, $username, 1);
-        $response = $reddit->getDisliked();
-        $this->insert_reddit_posts_data($response, $username, -1);
+        if ($reddit->loginSuccess) {
+            $this->insert_user($username, $password);
+            $response = $reddit->getLiked();
+            $this->insert_reddit_posts_data($response, $username, 1);
+            $response = $reddit->getDisliked();
+            $this->insert_reddit_posts_data($response, $username, -1);
+            echo 'Data gathered and inserted.';
+        }
+        else
+            echo 'Bad login';
+    }
+    
+    function insert_user($username, $password)
+    {
+        $post_query = $this->db->query("SELECT * FROM users WHERE reddit_username=?", array($username));
+        if ($post_query->num_rows() == 0)
+        {
+            $data = array('reddit_username' => $username , 'salted_hash' => $password , 'signup_date' => date("Y-m-d H:i:s"));
+            $this->db->insert('users', $data);
+        }
     }
     
     function insert_reddit_posts_data($response, $username, $vote_direction)
