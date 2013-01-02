@@ -8,13 +8,14 @@
 *   $reddit->login("USERNAME", "PASSWORD");
 *   $user = $reddit->getUser();
 */
-class reddit{
+class Reddit{
     //private $apiHost = "http://www.reddit.com/api";
     private $apiHost = "https://ssl.reddit.com/api";
     private $modHash = null;
     private $session = null;
     private $username = null;
     public $loginSuccess = false;
+    public $errorMessage = null;
     
     /**
     * Class Constructor
@@ -31,15 +32,22 @@ class reddit{
         $postData = sprintf("api_type=json&user=%s&passwd=%s",
                             $username,
                             $password);
-        $response = $this->runCurl($urlLogin, $postData);
-        
-        if (count($response->json->errors) > 0){
-            return "login error";    
-        } else {
-            $this->loginSuccess = true;
-            $this->modHash = $response->json->data->modhash;   
-            $this->session = $response->json->data->cookie;
-            return $this->modHash;
+        if ($username)
+        {
+            $response = $this->runCurl($urlLogin, $postData);
+            if (count($response->json->errors) > 0){
+                if ($response->json->errors[0][0] == 'RATELIMIT')
+                    $this->errorMessage = 'API rate limit reached, please try again later.';
+                else
+                    $this->errorMessage = 'Please enter a valid username and password.';
+                
+                return "login error";
+            } else {
+                $this->loginSuccess = true;
+                $this->modHash = $response->json->data->modhash;
+                $this->session = $response->json->data->cookie;
+                return $this->modHash;
+            }
         }
     }
     
@@ -121,8 +129,9 @@ class reddit{
     * Get the listing of submissions that the user liked
     * @link http://www.reddit.com/dev/api#GET_user_{username}_liked
     */
-    public function getLiked(){
-        $url = 'http://www.reddit.com/user/' . $this->username . '/liked.json';
+    public function getLiked($after){
+        $after_clause = $after ? '?after=' . $after : '';
+        $url = 'http://www.reddit.com/user/' . $this->username . '/liked.json' . $after_clause;
         return $this->runCurl($url);
     }
     
@@ -132,8 +141,9 @@ class reddit{
     * Get the listing of submissions that the user disliked
     * @link http://www.reddit.com/dev/api#GET_user_{username}_disliked
     */
-    public function getDisliked(){
-        $url = 'http://www.reddit.com/user/tompatterson/disliked.json';
+    public function getDisliked($after){
+        $after_clause = $after ? '?after=' . $after : '';
+        $url = 'http://www.reddit.com/user/' . $this->username . '/disliked.json' . $after_clause;
         return $this->runCurl($url);
     }
     
@@ -397,5 +407,8 @@ class reddit{
         
         return $response;
     }
+    
+    public function getModHash(){
+        return $this->modHash;
+    }
 }
-?>

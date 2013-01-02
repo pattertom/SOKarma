@@ -2,10 +2,15 @@
 
 class User extends CI_Controller {
 
+    public $current_user;
+
     function __construct()
     {
         parent::__construct();
+        $this->load->library('Reddit');
         $this->load->model('user_model');
+        $this->current_user = new stdClass();
+        $this->current_user->reddit = null;
     }
 
     public function index()
@@ -17,12 +22,17 @@ class User extends CI_Controller {
     {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
+        if (!$this->current_user->reddit)
+            $this->current_user->reddit = new Reddit($username, $password);
+        $message = $this->current_user->reddit->errorMessage;
         
-        if ($username && $password)
-            $this->user_model->record_actions($username, $password);
-        else {
-            $this->session->set_flashdata('message', '<div class="fail">You must supply a username and password.</div>');
+        if(!$this->current_user->reddit->loginSuccess){
+            $this->session->set_flashdata('message', '<div class="fail">'.$message.'</div>');
             redirect('user/login');
+        }else{
+            $this->current_user->user_id = $this->user_model->save_user($username, $password, $this->current_user->reddit->getModHash());
+            $this->user_model->get_liked();
+            $this->user_model->get_disliked();
         }
     }
 
