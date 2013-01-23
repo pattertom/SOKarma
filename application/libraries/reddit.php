@@ -32,6 +32,7 @@ class Reddit{
         $postData = sprintf("api_type=json&user=%s&passwd=%s",
                             $username,
                             $password);
+                            
         if ($username)
         {
             $response = $this->runCurl($urlLogin, $postData);
@@ -76,7 +77,6 @@ class Reddit{
         
         //if link was present, add to POST data             
         if ($link != null){ $postData .= "&url=" . urlencode($link); }
-    
         $response = $this->runCurl($urlSubmit, $postData);
         
         if ($response->jquery[18][3][0] == "that link has already been submitted"){
@@ -388,7 +388,6 @@ class Reddit{
     */
     private function runCurl($url, $postVals = null){
         $ch = curl_init($url);
-        
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_COOKIE => "reddit_session={$this->session}",
