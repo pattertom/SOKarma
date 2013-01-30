@@ -2,7 +2,7 @@
 $this->load->view('header', array('title'=>'Login'));
 echo $this->session->flashdata('message');
 
-echo form_open_multipart('/user/create');
+echo form_open_multipart('/user/process_login');
 ?>
 <div>
     <label for="username">Username</label>

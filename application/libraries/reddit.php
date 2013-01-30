@@ -13,7 +13,7 @@ class Reddit{
     private $apiHost = "https://ssl.reddit.com/api";
     private $modHash = null;
     private $session = null;
-    private $username = null;
+    public $username = null;
     public $loginSuccess = false;
     public $errorMessage = null;
     

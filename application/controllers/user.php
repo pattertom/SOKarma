@@ -2,15 +2,10 @@
 
 class User extends CI_Controller {
 
-    public $current_user;
-
     function __construct()
     {
         parent::__construct();
-        $this->load->library('Reddit');
         $this->load->model('user_model');
-        $this->current_user = new stdClass();
-        $this->current_user->reddit = null;
     }
 
     public function index()
@@ -22,19 +17,15 @@ class User extends CI_Controller {
     {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
-        if (!$this->current_user->reddit)
-            $this->current_user->reddit = new Reddit($username, $password);
+        $this->user_model->load_reddit($username, $password);
         
-        $message = $this->current_user->reddit->errorMessage;
-        
-        if(!$this->current_user->reddit->loginSuccess){
+        $message = $this->user_model->get_reddit()->errorMessage;
+        if(!$this->user_model->get_reddit()->loginSuccess){
             $this->session->set_flashdata('message', '<div class="fail">'.$message.'</div>');
             redirect('user/login');
         }else{
-            $new_user = $this->user_model->insert_user($username, $password, $this->current_user->reddit->getModHash());
-            $this->current_user->user_id = $this->user_model->get_id_for_username($username);
-            $this->user_model->get_liked();
-            $this->user_model->get_disliked();
+            $new_user = $this->user_model->insert_user($username, $password);
+
             if ($new_user)
                 redirect('user/signup?page=2');
         }
@@ -44,6 +35,20 @@ class User extends CI_Controller {
     {
         $this->load->helper('form');
         $this->load->view('user/login');
+    }
+    
+    public function process_login()
+    {
+        $username = $this->input->post('username');
+        $password  = $this->input->post('password');
+        $this->user_model->process_login($username, $password);
+        redirect('dashboard/index');
+    }
+    
+    public function logout()
+    {
+        $this->user_model->logout();
+        redirect('user/login');
     }
     
     public function signup($id=0)
@@ -72,6 +77,24 @@ class User extends CI_Controller {
         }
     }
     
+    
+    public function script()
+    {
+        $query = $this->db->query("SELECT * FROM reddit_votes WHERE user_id=?", array('1'));
+        $counter = 0;
+        foreach ($query->result() as $row) {
+            if ($counter % 4 == 0) {
+                echo $counter.'<br />';
+                $data = array(
+                    'user_id' => 6,
+                    'reddit_post_id' => $row->reddit_post_id,
+                    'vote_direction' => $row->vote_direction
+                );
+                $this->db->insert('reddit_votes', $data);
+            }
+            $counter++;
+        }
+    }
 }
 
 /* End of file user_controller.php */
